@@ -1,0 +1,40 @@
+server:
+  port: 8080
+
+eureka:
+  instance:
+    # Eureka에 등록할 때, 호스트명 대신 IP 주소 등록
+    prefer-ip-address: true
+  client:
+    # Eureka 서버에 클라이언트로 등록
+    register-with-eureka: true
+    # Eureka에서 다른 서비스 목록 가져와서 로컬 캐시에 저장
+    # 이걸 기반으로 로드밸런싱하거나 서비스에 요청
+    fetch-registry: true
+    serviceUrl:
+      # Eureka 서버가 실행 중인 주소 명시
+      # Eureka 서버에 연결해서 서비스 등록 및 검색 수행
+      defaultZone: http://localhost:8761/eureka/
+
+spring:
+  cloud:
+    gateway:
+      # Spring MVC 기반으로 설정
+      mvc:
+        # 라우팅 설정 시작
+        # 어떤 요청을 어떤 마이크로서비스로 전달할지 설정
+        routes:
+            # 로그 구분, 관리
+          - id: backend-user
+            # 요청을 전달할 목적지 마이크로서비스 이름
+            # lb://는 LoadBalancer 의미
+            # Eureka에서 backend-user라는 이름을 가진 인스턴스 중 하나로 요청 보냄
+            uri: lb://backend-user
+            # 이 조건에 해당하는 요청만 해당 라우트로 전달됨
+            # /api/user/로 시작하는 요청 → Eureak에서 backend-user로 등록된 서비스로 전달
+            predicates:
+              - Path=/api/user/**
+          - id: backend-alim
+            uri: lb://backend-alim
+            predicates:
+              - Path=/api/alim/**
