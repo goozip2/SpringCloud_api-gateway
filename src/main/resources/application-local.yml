@@ -17,7 +17,12 @@ eureka:
       defaultZone: http://localhost:8761/eureka/
 
 spring:
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans
   cloud:
+    config:
+      enabled: false
     gateway:
       # Spring MVC 기반으로 설정
       mvc:
@@ -50,7 +55,6 @@ spring:
               - Path=/api/post/**
             filters:
               - AddAuthenticationHeader
-
 
 jwt:
   header: Authorization
